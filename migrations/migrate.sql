@@ -1,0 +1,26 @@
+CREATE DATABASE IF NOT EXISTS telco_churn;
+\connect telco_churn;
+
+CREATE TABLE IF NOT EXISTS telco_customer_churn (
+  customerID TEXT PRIMARY KEY,
+  gender TEXT,
+  SeniorCitizen INT,
+  Partner TEXT,
+  Dependents TEXT,
+  tenure INT,
+  PhoneService TEXT,
+  MultipleLines TEXT,
+  InternetService TEXT,
+  OnlineSecurity TEXT,
+  OnlineBackup TEXT,
+  DeviceProtection TEXT,
+  TechSupport TEXT,
+  StreamingTV TEXT,
+  StreamingMovies TEXT,
+  Contract TEXT,
+  PaperlessBilling TEXT,
+  PaymentMethod TEXT,
+  MonthlyCharges NUMERIC,
+  TotalCharges NUMERIC,
+  churn TEXT
+);

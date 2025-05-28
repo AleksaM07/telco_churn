@@ -1,5 +1,0 @@
-scilit_case:
-  target: dev
-  outputs:
-    dev:
-      type: duckdb

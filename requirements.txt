@@ -1,4 +1,9 @@
-apache-airflow==2.8.1
-pydantic>=2.3.0
+psycopg2-binary
+pandas
+polars
+pyarrow
+scikit-learn
+joblib
 fastapi
-duckdb==0.10.0
+uvicorn[standard]
+python-dotenv
