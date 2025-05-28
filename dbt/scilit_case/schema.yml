@@ -1,0 +1,14 @@
+version: 2
+models:
+  - name: stg_publications
+    columns:
+      - name: work_id
+        tests: [unique, not_null]
+      - name: published_date
+        tests: [not_null]
+  - name: stg_authors
+    columns:
+      - name: work_id
+        tests: [not_null]
+      - name: author_id
+        tests: [not_null]

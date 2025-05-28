@@ -1,0 +1,18 @@
+name: scilit_case
+version: '1.0'
+config-version: 2
+profile: scilit_case
+
+model-paths: ["models"]  # <- Combine all models under this single path
+
+analysis-paths: []
+test-paths: []
+data-paths: []
+macro-paths: []
+
+models:
+  scilit_case:
+    staging:
+      +schema: raw_stage
+    marts:
+      +schema: analytics
