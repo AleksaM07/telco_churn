@@ -25,8 +25,10 @@ x-airflow-common:
   # In order to add custom dependencies or upgrade provider packages you can use your extended image.
   # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
   # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
-  image: apache/airflow:2.9.1
-  # build: .
+  build:
+    context: .
+    dockerfile: Dockerfile
+  image: custom-airflow:2.9.1
   environment:
     &airflow-common-env
     AIRFLOW__CORE__EXECUTOR: CeleryExecutor
@@ -50,7 +52,12 @@ x-airflow-common:
     - ./migrations:/opt/airflow/migrations
     - ./model:/opt/airflow/model
     - ./api:/opt/airflow/api
+    - ./data/raw/Telco-Customer-Churn.csv:/opt/airflow/data/raw/Telco-Customer-Churn.csv
+    - ./.env:/opt/airflow/.env
+    - ./outputs:/opt/airflow/outputs
   user: "${AIRFLOW_UID:-50000}:0"
+  env_file:
+    - .env
   depends_on:
     &airflow-common-depends-on
     redis:

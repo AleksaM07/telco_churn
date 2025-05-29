@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 import psycopg2
 
+
 def create_database_if_not_exists():
     # Connect to the default 'postgres' DB
     conn = psycopg2.connect(
@@ -62,22 +63,22 @@ with DAG(
 
     load = BashOperator(
         task_id='load',
-        bash_command='python /opt/airflow/etl/load_raw.py'
+        bash_command='export $(cat /opt/airflow/.env | xargs) && python /opt/airflow/etl/load_raw.py'
     )
 
     extract = BashOperator(
         task_id='extract',
-        bash_command='python /opt/airflow/etl/export_parquet.py'
+        bash_command='python /opt/airflow/etl/export_parquet.py',
     )
 
     train = BashOperator(
         task_id='train',
-        bash_command='python /opt/airflow/model/train_model.py'
+        bash_command='python /opt/airflow/model/model.py'
     )
 
     serve = BashOperator(
         task_id='serve',
-        bash_command='uvicorn api.main:app --reload'
+        bash_command='uvicorn api:app --reload'
     )
 
-    migrate >> load >> extract >> train >> serve
+    create_db >> migrate >> load >> extract >> train >> serve

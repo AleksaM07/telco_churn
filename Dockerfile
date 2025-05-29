@@ -11,8 +11,7 @@ COPY requirements.txt /tmp/requirements.txt
 USER airflow
 
 # Install python packages as airflow user
-RUN pip install --no-cache-dir -r /tmp/requirements.txt \
- && pip install --no-cache-dir dbt-core dbt-duckdb
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
 # Switch back to airflow user if not already (safe)
 USER airflow
