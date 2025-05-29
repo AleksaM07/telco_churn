@@ -1,5 +1,3 @@
-CREATE DATABASE IF NOT EXISTS telco_churn;
-
 CREATE TABLE IF NOT EXISTS telco_customer_churn (
   customerID TEXT PRIMARY KEY,
   gender TEXT,
