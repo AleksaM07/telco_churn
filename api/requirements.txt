@@ -8,3 +8,5 @@ lightgbm
 imblearn
 pytest
 psycopg2-binary
+dotenv
+polars

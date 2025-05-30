@@ -8,7 +8,7 @@ This project provides an end-to-end pipeline for predicting customer churn using
  - Model training    
  - Model serving via FastAPI  
  - Workflow orchestration with Apache Airflow  
- - Basic testing to ensure pipeline reliability
+ - Basic testing to ensure pipeline reliability  - dosne't work yet
 
   
 # Getting Started  
@@ -44,9 +44,9 @@ This project provides an end-to-end pipeline for predicting customer churn using
   
 
      - Builds containers
-     - Runs ETL unit tests
+     - Runs ETL unit tests  - dosne't work yet
      - Waits for the FastAPI app to start
-     - Sends a test prediction request to confirm it’s working
+     - Sends a test prediction request to confirm it’s working 
      - Leaves the terminal open for review
 
   
@@ -89,16 +89,15 @@ Makefile: Included for completeness, even though the project uses Airflow for or
 
 **  
   
-Test results from the ETL unit tests  
+Test results from the ETL unit tests - doesn't work yet
   
 A sample churn prediction request sent to the API  
   
 Visibility into the pipeline through the Airflow web UI  
   
 A working FastAPI service that you can interact with or extend  
-  
-*Done!You're ready to build on this or deploy it in production.  
-Churn insights = unlocked.* 
+
+*Churn insights = unlocked.* 
   
   
   

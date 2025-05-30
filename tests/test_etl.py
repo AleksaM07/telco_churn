@@ -5,7 +5,7 @@ import pytest
 def test_load_raw_loads_data():
     # Run your ETL script as a subprocess
     result = subprocess.run(
-        ["python", "etl/load_raw.py"],
+        ["python", "/opt/airflow/etl/load_raw.py"],
         capture_output=True,
         text=True
     )
@@ -13,11 +13,11 @@ def test_load_raw_loads_data():
 
     # Connect to the Postgres DB and check row count
     conn = psycopg2.connect(
-        host='localhost',  # or your docker/postgres host
+        host='postgres',
         port=5432,
         user='airflow',
         password='airflow',
-        dbname='telco_churn'
+        dbname='postgres'  # Connect to default postgres DB to create other DBs
     )
     cur = conn.cursor()
     cur.execute("SELECT COUNT(*) FROM telco_customer_churn;")
