@@ -4,14 +4,10 @@ USER root
 
 # Copy requirements to somewhere readable
 COPY requirements.txt /tmp/requirements.txt
-# Install any OS packages you might need here (optional)
 # RUN apt-get update && apt-get install -y ...
+RUN apt-get update && apt-get install -y libgomp1
 
-# Switch to airflow user (recommended by Airflow image)
 USER airflow
-
 # Install python packages as airflow user
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
-
-# Switch back to airflow user if not already (safe)
 USER airflow

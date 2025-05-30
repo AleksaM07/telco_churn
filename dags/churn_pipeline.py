@@ -76,9 +76,9 @@ with DAG(
         bash_command='python /opt/airflow/model/model.py'
     )
 
-    serve = BashOperator(
-        task_id='serve',
-        bash_command='uvicorn api:app --reload'
-    )
+    #serve = BashOperator(
+    #    task_id='serve',
+    #    bash_command='uvicorn api:app --reload'
+    #)
 
-    create_db >> migrate >> load >> extract >> train >> serve
+    create_db >> migrate >> load >> extract >> train# >> serve

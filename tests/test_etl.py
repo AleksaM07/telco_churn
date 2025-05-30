@@ -1,21 +1,29 @@
-import os
+import subprocess
+import psycopg2
 import pytest
-import pandas as pd
-from etl.export_parquet import export_to_parquet
-from etl.load_raw import load_csv_to_db
 
-@pytest.fixture(scope='module')
-def setup_db_and_export(tmp_path):
-    # load raw and export
-    load_csv_to_db()
-    os.environ['PARQUET_PATH'] = str(tmp_path / 'test.parquet')
-    export_to_parquet()
-    return tmp_path / 'test.parquet'
+def test_load_raw_loads_data():
+    # Run your ETL script as a subprocess
+    result = subprocess.run(
+        ["python", "etl/load_raw.py"],
+        capture_output=True,
+        text=True
+    )
+    assert result.returncode == 0, f"ETL script failed: {result.stderr}"
 
+    # Connect to the Postgres DB and check row count
+    conn = psycopg2.connect(
+        host='localhost',  # or your docker/postgres host
+        port=5432,
+        user='airflow',
+        password='airflow',
+        dbname='telco_churn'
+    )
+    cur = conn.cursor()
+    cur.execute("SELECT COUNT(*) FROM telco_customer_churn;")
+    count = cur.fetchone()[0]
+    cur.close()
+    conn.close()
 
-def test_parquet_exists(setup_db_and_export):
-    parquet = setup_db_and_export
-    assert parquet.exists()
-    df = pd.read_parquet(parquet)
-    assert not df.empty
-    assert 'customerID' in df.columns
+    # Assert minimum expected rows (e.g., your CSV has ~7000 rows)
+    assert count > 6000, f"Too few rows loaded: {count}"

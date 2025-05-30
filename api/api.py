@@ -1,62 +1,80 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-import numpy as np
 import pandas as pd
 import pickle
 
 app = FastAPI()
 
 # Load the model and preprocessing tools
-with open("model.pkl", "rb") as f:
+with open("/opt/airflow/model/artifacts/model.pkl", "rb") as f:
     model = pickle.load(f)
 
-with open("scaler.pkl", "rb") as f:
-    scaler = pickle.load(f)
+with open("/opt/airflow/model/artifacts/preprocessor.pkl", "rb") as f:
+    preprocessor = pickle.load(f)
 
-with open("encoder.pkl", "rb") as f:
-    encoder = pickle.load(f)
+with open("/opt/airflow/model/artifacts/selector.pkl", "rb") as f:
+    selector = pickle.load(f)
 
 
 # Define input schema
 class CustomerData(BaseModel):
     gender: str
-    SeniorCitizen: int
-    Partner: str
-    Dependents: str
+    senior_citizen: int
+    partner: str
+    dependents: str
     tenure: int
-    PhoneService: str
-    MultipleLines: str
-    InternetService: str
-    OnlineSecurity: str
-    OnlineBackup: str
-    DeviceProtection: str
-    TechSupport: str
-    StreamingTV: str
-    StreamingMovies: str
-    Contract: str
-    PaperlessBilling: str
-    PaymentMethod: str
-    MonthlyCharges: float
-    TotalCharges: float
+    phone_service: str
+    multiple_lines: str
+    internet_service: str
+    online_security: str
+    online_backup: str
+    device_protection: str
+    tech_support: str
+    streaming_tv: str
+    streaming_movies: str
+    contract: str
+    paperless_billing: str
+    payment_method: str
+    monthly_charges: float
+    total_charges: float
+
+
+def prepare_input(input_data: dict) -> pd.DataFrame:
+    df = pd.DataFrame([input_data])
+
+    # Convert numeric fields explicitly
+    numeric_cols = ['monthly_charges', 'total_charges', 'tenure', 'senior_citizen']
+    for col in numeric_cols:
+        df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0.0)
+
+    # Map senior_citizen from 0/1 to 'No'/'Yes'
+    df['senior_citizen'] = df['senior_citizen'].map({0: 'No', 1: 'Yes'})
+
+    # Replace training-specific strings
+    df.replace({
+        'No phone service': 'No',
+        'No internet service': 'No'
+    }, inplace=True)
+
+    return df
 
 
 @app.post("/predict")
 def predict(data: CustomerData):
     try:
-        # Convert to DataFrame
-        df = pd.DataFrame([data.dict()])
+        # Prepare input data
+        input_df = prepare_input(data.dict())
 
-        # Preprocessing (same order as training!)
-        categorical_cols = encoder.feature_names_in_.tolist()
-        numerical_cols = scaler.feature_names_in_.tolist()
+        # Apply preprocessing
+        X_preprocessed = preprocessor.transform(input_df)
 
-        df_cat = encoder.transform(df[categorical_cols])
-        df_num = scaler.transform(df[numerical_cols])
+        # Feature selection
+        X_selected = selector.transform(X_preprocessed)
 
-        X = np.hstack((df_cat, df_num))
-        pred = model.predict_proba(X)[0][1]
+        # Predict churn probability
+        prob_churn = model.predict_proba(X_selected)[0][1]
 
-        return {"churn_probability": pred}
+        return {"churn_probability": round(float(prob_churn), 4)}
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

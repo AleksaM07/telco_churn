@@ -55,6 +55,7 @@ x-airflow-common:
     - ./data/raw/Telco-Customer-Churn.csv:/opt/airflow/data/raw/Telco-Customer-Churn.csv
     - ./.env:/opt/airflow/.env
     - ./outputs:/opt/airflow/outputs
+    - ./tests:/opt/airflow/tests
   user: "${AIRFLOW_UID:-50000}:0"
   env_file:
     - .env
@@ -199,6 +200,32 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
+
+  fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile-fastapi
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    volumes:
+      - .:/opt/airflow/api
+      - ./dags:/opt/airflow/dags
+      - ./etl:/opt/airflow/etl
+      - ./migrations:/opt/airflow/migrations
+      - ./model:/opt/airflow/model
+      - ./api:/opt/airflow/api
+      - ./data/raw/Telco-Customer-Churn.csv:/opt/airflow/data/raw/Telco-Customer-Churn.csv
+      - ./.env:/opt/airflow/.env
+      - ./outputs:/opt/airflow/outputs
+      - ./tests:/opt/airflow/tests
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
 
 volumes:
   postgres-db-volume:

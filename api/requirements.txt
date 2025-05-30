@@ -1,0 +1,10 @@
+fastapi
+pydantic
+pandas
+uvicorn
+inflection
+scikit-learn
+lightgbm
+imblearn
+pytest
+psycopg2-binary
